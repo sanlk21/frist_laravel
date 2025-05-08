@@ -23,5 +23,9 @@ Route::get('Proposal', function () {
     return Inertia::render('Proposal');
 })->middleware(['auth', 'verified'])->name('Proposal');
 
+Route::get('Transaction', function () {
+    return Inertia::render('Transaction');
+})->middleware(['auth', 'verified'])->name('Transaction');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
