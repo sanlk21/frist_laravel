@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomerController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -26,6 +27,12 @@ Route::get('Proposal', function () {
 Route::get('Transaction', function () {
     return Inertia::render('Transaction');
 })->middleware(['auth', 'verified'])->name('Transaction');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('customers', CustomerController::class)->only([
+        'index', 'store', 'update', 'destroy'
+    ]);
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
