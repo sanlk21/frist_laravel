@@ -1,66 +1,68 @@
 <?php
 
+// app/Http/Controllers/InvoiceController.php
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return Inertia::render('Invoice', [
+            'invoices' => Invoice::with('customer')->latest()->get(),
+            'customers' => Customer::all(),
+            'editingInvoice' => null
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'issue_date' => 'required|date',
+            'due_date' => 'required|date|after:issue_date',
+            'amount' => 'required|numeric|min:0',
+            'tax' => 'required|numeric|min:0',
+            'status' => 'required|in:draft,sent,paid,overdue,cancelled',
+            'notes' => 'nullable|string'
+        ]);
+
+        Invoice::create($validated);
+
+        return redirect()->route('invoices.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Invoice $invoice)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Invoice $invoice)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Invoice $invoice)
     {
-        //
+        $validated = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'issue_date' => 'required|date',
+            'due_date' => 'required|date|after:issue_date',
+            'amount' => 'required|numeric|min:0',
+            'tax' => 'required|numeric|min:0',
+            'status' => 'required|in:draft,sent,paid,overdue,cancelled',
+            'notes' => 'nullable|string'
+        ]);
+
+        $invoice->update($validated);
+
+        return redirect()->route('invoices.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Invoice $invoice)
     {
-        //
+        $invoice->delete();
+        return redirect()->route('invoices.index');
+    }
+
+    public function send(Invoice $invoice)
+    {
+        // Implement email sending logic here
+        $invoice->update(['status' => 'sent']);
+        return back()->with('success', 'Invoice sent successfully');
     }
 }

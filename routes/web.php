@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\InvoiceController;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -31,6 +33,12 @@ Route::get('Transaction', function () {
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('invoices', InvoiceController::class)->except(['show']);
+    Route::post('/invoices/{invoice}/send', [InvoiceController::class, 'send'])->name('invoices.send');
+});
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
     // ... existing routes ...
     Route::resource('proposals', ProposalController::class)->only([
         'index', 'store', 'update', 'destroy'
@@ -41,6 +49,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('customers', CustomerController::class)->only([
         'index', 'store', 'update', 'destroy'
     ]);
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('transactions', TransactionController::class)->except(['show']);
 });
 
 require __DIR__.'/settings.php';

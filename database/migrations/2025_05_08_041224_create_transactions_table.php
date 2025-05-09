@@ -9,7 +9,8 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+// database/migrations/xxxx_create_transactions_table.php
+public function up()
 {
     Schema::create('transactions', function (Blueprint $table) {
         $table->id();
@@ -18,7 +19,8 @@ return new class extends Migration
         $table->decimal('amount', 10, 2);
         $table->string('payment_method');
         $table->string('transaction_id')->unique();
-        $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+        $table->enum('status', ['pending', 'completed', 'failed', 'refunded'])->default('pending');
+        $table->text('notes')->nullable();
         $table->timestamps();
     });
 }
