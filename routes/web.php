@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProposalController;
 use App\Http\Controllers\CustomerController;
 use Inertia\Inertia;
 
@@ -27,6 +28,14 @@ Route::get('Proposal', function () {
 Route::get('Transaction', function () {
     return Inertia::render('Transaction');
 })->middleware(['auth', 'verified'])->name('Transaction');
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    // ... existing routes ...
+    Route::resource('proposals', ProposalController::class)->only([
+        'index', 'store', 'update', 'destroy'
+    ]);
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('customers', CustomerController::class)->only([
